@@ -1,77 +1,58 @@
-#!/usr/bin/env python3
-"""
-main.py - Test script for mean_var_std.calculate() function
 
-This script demonstrates the usage of the calculate() function from mean_var_std.py
-by running several test cases and displaying their results in a readable format.
+"""
+Test script for mean_var_std.calculate() function
 """
 
 from mean_var_std import calculate
 
-def print_results(result_dict):
-    """Pretty-print the results dictionary in a human-readable format.
-    
-    Args:
-        result_dict (dict): Dictionary containing the calculation results
-                           in the format returned by calculate()
-    """
-    for key, value in result_dict.items():
-        print(f"{key.title() + ':':<20} {value}")
+def format_result(result):
+    """Format the result dictionary for better readability."""
+    formatted = {}
+    for key, value in result.items():
+        if isinstance(value, list):
+            formatted[key] = [v if isinstance(v, list) else round(v, 4) for v in value]
+        else:
+            formatted[key] = round(value, 4)
+    return formatted
 
-def run_test_case(test_input, case_number=None):
-    """Run a single test case and display the results.
+def run_tests():
+    """Execute test cases for calculate() function."""
+    print("Running tests...\n")
     
-    Args:
-        test_input (list): List of 9 numbers to test
-        case_number (int, optional): Test case number for display purposes
-    """
-    if case_number:
-        print(f"\n{' Test Case ' + str(case_number) + ' ':-^50}")
-    else:
-        print(f"\n{' Test Case ':-^50}")
-    
-    print(f"Input: {test_input}")
-    try:
-        result = calculate(test_input)
-        print("\nResults:")
-        print_results(result)
-    except ValueError as e:
-        print(f"\nError: {e}")
-
-def main():
-    """Main function to execute test cases for the calculate() function."""
-    # Standard test cases (valid inputs)
-    standard_tests = [
-        [0, 1, 2, 3, 4, 5, 6, 7, 8],  # Sequential numbers
-        [2, 6, 2, 8, 4, 0, 1, 5, 7],   # Random numbers
-        [9, 1, 5, 3, 3, 3, 2, 9, 0],   # Repeated numbers
-        [5, 5, 5, 5, 5, 5, 5, 5, 5]    # All identical numbers
+    # Valid test cases
+    valid_tests = [
+        ([0, 1, 2, 3, 4, 5, 6, 7, 8], "Sequential numbers"),
+        ([2, 6, 2, 8, 4, 0, 1, 5, 7], "Random numbers"),
+        ([9, 1, 5, 3, 3, 3, 2, 9, 0], "Repeated numbers"),
+        ([5, 5, 5, 5, 5, 5, 5, 5, 5], "All identical")
     ]
     
-    # Edge cases (invalid inputs)
-    edge_cases = [
-        [1, 2, 3, 4, 5],              # Too few elements
-        list(range(10)),               # Too many elements
-        ['a', 'b', 'c', 1, 2, 3, 4, 5, 6]  # Non-numeric elements
+    # Invalid test cases
+    invalid_tests = [
+        ([1, 2, 3], "Too few elements"),
+        (list(range(10)), "Too many elements"),
+        (['a', 'b', 'c', 1, 2, 3, 4, 5, 6], "Non-numeric elements")
     ]
     
-    print("="*50)
-    print(" TESTING MEAN_VAR_STD.CALCULATE() FUNCTION ")
-    print("="*50)
+    # Run valid tests
+    print("VALID INPUT TESTS:")
+    for test, description in valid_tests:
+        print(f"\nTest: {description}")
+        print(f"Input: {test}")
+        result = calculate(test)
+        print("Result:")
+        for k, v in format_result(result).items():
+            print(f"{k:>20}: {v}")
     
-    # Run standard test cases
-    print("\nSTANDARD TEST CASES (VALID INPUTS):")
-    for i, test_input in enumerate(standard_tests, 1):
-        run_test_case(test_input, i)
-    
-    # Run edge cases
-    print("\nEDGE CASES (INVALID INPUTS):")
-    for i, test_input in enumerate(edge_cases, len(standard_tests)+1):
-        run_test_case(test_input, i)
-    
-    print("\n" + "="*50)
-    print(" TESTING COMPLETE ")
-    print("="*50)
+    # Run invalid tests
+    print("\nINVALID INPUT TESTS:")
+    for test, description in invalid_tests:
+        print(f"\nTest: {description}")
+        print(f"Input: {test}")
+        try:
+            calculate(test)
+        except ValueError as e:
+            print(f"Expected Error: {str(e)}")
 
 if __name__ == "__main__":
-    main()
+    run_tests()
